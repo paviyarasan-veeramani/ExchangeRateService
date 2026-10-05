@@ -1,0 +1,42 @@
+<section class="rates" id="rates">
+  <div class="wrap">
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>Current rates</h2>
+          <p>All available currency pairs</p>
+        </div>
+        <input class="search" type="search" placeholder="Search a currency, e.g. USD"
+               aria-label="Search rates" (input)="onSearch($event)">
+      </div>
+
+      @if (svc.loading()) {
+        <div class="state">Loading rates…</div>
+      } @else if (svc.error()) {
+        <div class="state err" role="alert">
+          Couldn't load rates. Make sure the API is running.
+          <br><button type="button" class="use" style="background:none;border:0;cursor:pointer;margin-top:8px" (click)="reload()">Try again</button>
+        </div>
+      } @else if (!filtered().length) {
+        <div class="state">{{ svc.rates().length ? 'No rates match your search.' : 'No rates yet. Add a rate through the API and it will show up here.' }}</div>
+      } @else {
+        <table>
+          <thead>
+            <tr><th>Currency pair</th><th class="num">Rate</th><th>Last updated</th></tr>
+          </thead>
+          <tbody>
+            @for (r of filtered(); track r.id) {
+              <tr>
+                <td class="pair-cell" data-label="Pair">
+                  <div class="cur"><span class="badge">{{ r.fromCurrency }}</span><span>{{ r.fromCurrency }} to {{ r.toCurrency }}</span></div>
+                </td>
+                <td class="num" data-label="Rate"><span class="rate">{{ r.rate | number: '1.4-4' }}</span></td>
+                <td data-label="Updated"><span class="when">{{ r.updatedAt | date: 'dd MMM yyyy, HH:mm' }}</span></td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </div>
+  </div>
+</section>

@@ -1,12 +1,18 @@
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, inject } from '@angular/core';
+import { ConvertComponent } from './components/convert/convert.component';
+import { RatesComponent } from './components/rates/rates.component';
+import { RateService } from './services/rate.service';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [ConvertComponent, RatesComponent],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  styleUrl: './app.component.css'
 })
 export class AppComponent {
-  title = 'web';
+  svc = inject(RateService);
+  ngOnInit(): void {
+    this.svc.loadRates();
+    this.svc.checkHealth();
+  }
 }
