@@ -1,0 +1,62 @@
+<section class="hero" id="convert">
+  <div class="wrap hero-grid">
+    <div>
+      <h1>Convert currencies at the latest rates</h1>
+      <p class="lead">Pick two currencies, enter an amount and see the converted value straight away.</p>
+      <div class="facts">
+        <div class="fact"><b>{{ svc.rates().length }}</b><span>Currency pairs</span></div>
+        <div class="fact">
+          <b>{{ svc.lastUpdated() ? (svc.lastUpdated() | date: 'dd MMM yyyy') : '-' }}</b>
+          <span>Last updated</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="converter">
+      <h2>Currency converter</h2>
+      <p class="sub">Rates come from the latest values saved in the system.</p>
+
+      <form class="form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <div class="field" [class.invalid]="amountInvalid">
+          <label for="amount">Amount</label>
+          <input id="amount" type="number" inputmode="decimal" step="any" formControlName="amount">
+          @if (amountInvalid) {
+            <p class="msg-error" role="alert">Enter an amount greater than 0.</p>
+          }
+        </div>
+
+        <div class="pair-row">
+          <div class="field">
+            <label for="from">From</label>
+            <select id="from" formControlName="from">
+              @for (c of svc.currencies(); track c) { <option [value]="c">{{ c }}</option> }
+            </select>
+          </div>
+          <button type="button" class="swap" aria-label="Swap currencies" (click)="swap()">⇄</button>
+          <div class="field">
+            <label for="to">To</label>
+            <select id="to" formControlName="to">
+              @for (c of svc.currencies(); track c) { <option [value]="c">{{ c }}</option> }
+            </select>
+          </div>
+        </div>
+
+        <button type="submit" class="btn" [disabled]="converting() || svc.error()">
+          {{ converting() ? 'Converting…' : 'Convert' }}
+        </button>
+      </form>
+
+      @if (failed()) {
+        <p class="msg-error" role="alert" style="margin-top:14px">Conversion failed. Check the API and try again.</p>
+      }
+
+      @if (result(); as r) {
+        <div class="result" aria-live="polite">
+          <div class="eq">{{ r.amount | number: '1.0-2' }} {{ r.from }} equals</div>
+          <div class="out">{{ r.result | number: '1.2-2' }} {{ r.to }}</div>
+          <div class="meta">1 {{ r.from }} = {{ r.rate | number: '1.4-4' }} {{ r.to }}</div>
+        </div>
+      }
+    </div>
+  </div>
+</section>
